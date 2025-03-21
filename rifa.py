@@ -137,9 +137,6 @@ def notificar_ganador(ganador, tipo_rifa):
             except:
                 continue
 
-
-
-
 # Comando /start
 @bot.message_handler(commands=['start'])
 def start(message):
@@ -447,20 +444,47 @@ def gratis(message):
     bot.register_next_step_handler(message, verificar_codigo_gratis)
 
 def verificar_codigo_gratis(message):
-    if not message or not message.text:
-        return
-    if not message.text.startswith('/'):
+    try:
         chat_id = message.chat.id
         codigo = message.text.strip()
         
-        # Verificar código con la página web
-        codigos_validos = cargar_json(CODIGOS_FILE)
-        if codigo in codigos_validos:
-            bot.send_message(chat_id, "¡Código válido! Por favor, ingrese su nombre completo:")
+        # Cargar códigos.json
+        try:
+            with open('codigos.json', 'r') as f:
+                datos = json.load(f)
+        except Exception as e:
+            bot.reply_to(message, "❌ Error al cargar los códigos. Por favor, intenta más tarde.")
+            return
+        
+        # Verificar si el código está en la lista de códigos disponibles
+        if codigo in datos['codigos']:
+            # Código válido, proceder con el registro
+            bot.send_message(chat_id, "✅ Código válido! Por favor, ingrese su nombre completo:")
             bot.register_next_step_handler(message, pedir_nombre_gratis, codigo)
-        else:
-            bot.send_message(chat_id, "Código no válido. Por favor, intente nuevamente.")
-            bot.register_next_step_handler(message, verificar_codigo_gratis)
+            return
+            
+        # Verificar si es el código activo
+        if codigo == datos['codigo_activo']:
+            # Código válido, proceder con el registro
+            bot.send_message(chat_id, "✅ Código válido! Por favor, ingrese su nombre completo:")
+            bot.register_next_step_handler(message, pedir_nombre_gratis, codigo)
+            return
+            
+        # Verificar si ya fue usado
+        for usado in datos['usados']:
+            if usado['codigo'] == codigo:
+                bot.send_message(chat_id, "❌ Este código ya ha sido utilizado. Por favor, intente con otro código.")
+                bot.register_next_step_handler(message, verificar_codigo_gratis)
+                return
+        
+        # Si llegamos aquí, el código no es válido
+        bot.send_message(chat_id, "❌ Código no válido. Por favor, intente nuevamente.")
+        bot.register_next_step_handler(message, verificar_codigo_gratis)
+        
+    except Exception as e:
+        print(f"Error al verificar código: {e}")
+        bot.send_message(chat_id, "❌ Error al verificar el código. Por favor, intente nuevamente.")
+        bot.register_next_step_handler(message, verificar_codigo_gratis)
 
 def pedir_nombre_gratis(message, codigo):
     if not message or not message.text:
@@ -610,7 +634,6 @@ def iniciar_chat_gods(message):
             f"❌ Error inesperado: {str(e)}\n"
             "Por favor, intenta nuevamente con /gods"
         )
-
 
 # Comando /ganadorz (solo admin)
 @bot.message_handler(commands=['ganadorz'])
@@ -1253,8 +1276,6 @@ def manejar_mensajes(message):
     # Si es un mensaje del cliente
     elif message.chat.id in conversaciones_activas:
         procesar_mensaje_cliente(message)
-
-
 
 # Inicializar archivos JSON
 inicializar_json()
