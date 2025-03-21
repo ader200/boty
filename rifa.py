@@ -1282,5 +1282,11 @@ inicializar_json()
 
 # Iniciar el bot
 if __name__ == '__main__':
-    print('Iniciando bot...')
-    bot.polling() 
+    try:
+        print('🤖 Bot iniciado exitosamente...')
+        # Usar skip_pending=True para ignorar mensajes antiguos al iniciar
+        bot.infinity_polling(skip_pending=True)
+    except Exception as e:
+        print(f'❌ Error al iniciar el bot: {e}')
+    finally:
+        print('👋 Bot detenido') 
