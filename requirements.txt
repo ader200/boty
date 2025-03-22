@@ -10,7 +10,7 @@ MarkupSafe==2.1.5
 pymongo==4.6.1
 
 # Manejo de variables de entorno
-python-dotenv==1.0.1
+python-dotenv==1.0.0
 
 # Utilidades
 datetime
@@ -18,11 +18,14 @@ python-json-logger==2.0.7
 requests==2.31.0
 
 # Bot de Telegram y QR
-pyTelegramBotAPI==4.15.4
-qrcode==7.4.2
+pyTelegramBotAPI==4.14.1
+qrcode==7.3
 Pillow==10.2.0
 pypng==0.20220715.0
 
 # Servidor
 gunicorn==21.2.0
 psutil==5.9.8
+
+# Additional dependencies
+uuid==1.30

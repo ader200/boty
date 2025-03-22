@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contratados</title>
+    <style>
+        .center {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .button {
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Contratados</h1>
+    <div>
+        {% for contratado in contratados %}
+            <div style="margin-bottom: 20px;">
+                <p>Nombre: {{ contratado.nombre }}</p>
+                <p>Cuenta de Banco: {{ contratado.cuenta_de_banco }}</p>
+                <p>Chat ID: {{ contratado.chat_id }}</p>
+                <form action="{{ url_for('calcular_pago', index=loop.index0) }}" method="post">
+                    <label for="qr1_visits">QR1 Visitas:</label>
+                    <input type="number" id="qr1_visits" name="qr1_visits" min="0">
+                    <label for="qr2_visits">QR2 Visitas:</label>
+                    <input type="number" id="qr2_visits" name="qr2_visits" min="0">
+                    <label for="bot_visits">Bot Visitas:</label>
+                    <input type="number" id="bot_visits" name="bot_visits" min="0">
+                    <button type="submit" class="button">Calcular Pago</button>
+                </form>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
