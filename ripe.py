@@ -9,11 +9,48 @@ import platform
 import subprocess
 import threading
 import time
+from flask import Flask, render_template_string
 from pymongo import MongoClient
 from dotenv import load_dotenv
 
 # Cargar variables de entorno
 load_dotenv()
+
+# Crear una aplicación Flask
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    return render_template_string("""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Bot de Rifas</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    margin: 40px;
+                    text-align: center;
+                }
+                h1 {
+                    color: #333;
+                }
+            </style>
+        </head>
+        <body>
+            <h1>Bot de Rifas</h1>
+            <p>El servidor está funcionando correctamente.</p>
+        </body>
+        </html>
+    """)
+
+# Función para ejecutar el servidor web en un hilo separado
+def run_web_server():
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8000)))
+
+# Iniciar el servidor web en un hilo separado
+web_thread = threading.Thread(target=run_web_server, daemon=True)
+web_thread.start()
 
 # Token del bot
 TOKEN = '6824080362:AAH9YKYT0xTLPnc0Z597YjVLXNCo4nvgl-8'
@@ -1551,10 +1588,6 @@ def manejar_mensajes(message):
 # Inicializar archivos JSON
 inicializar_json()
 
-# Iniciar el bot
-
-
-
 def backup_diario():
     """Realiza un backup diario de la base de datos"""
     while True:
@@ -1599,10 +1632,6 @@ def backup_diario():
         except Exception as e:
             print(f"❌ Error en backup: {e}")
             time.sleep(300)  # Esperar 5 minutos antes de reintentar
-
-# Iniciar el hilo de backup
-backup_thread = threading.Thread(target=backup_diario, daemon=True)
-backup_thread.start()
 
 def cargar_codigos():
     """Carga los códigos desde el archivo JSON"""
@@ -1698,9 +1727,12 @@ def verificar_codigo(codigo):
         return False
     except Exception as e:
         print(f"Error al verificar código: {e}")
-        return False 
-    
-    # Iniciar el bot
-if __name__ == '__main__': 
- print('Iniciando bot...')
- bot.polling()
+        return False
+
+# Iniciar el hilo de backup
+backup_thread = threading.Thread(target=backup_diario, daemon=True)
+backup_thread.start()
+
+if __name__ == '__main__':
+    print('Iniciando bot...')
+    bot.polling()
