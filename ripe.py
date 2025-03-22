@@ -46,11 +46,13 @@ def index():
 
 # Función para ejecutar el servidor web en un hilo separado
 def run_web_server():
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8000)))
+    port = int(os.environ.get('PORT', 3000))  # Render asigna el puerto mediante la variable PORT
+    app.run(host='0.0.0.0', port=port)
 
-# Iniciar el servidor web en un hilo separado
-web_thread = threading.Thread(target=run_web_server, daemon=True)
-web_thread.start()
+# Iniciar el servidor web en un hilo separado si no estamos usando gunicorn
+if 'gunicorn' not in os.environ.get('SERVER_SOFTWARE', ''):
+    web_thread = threading.Thread(target=run_web_server, daemon=True)
+    web_thread.start()
 
 # Token del bot
 TOKEN = '6824080362:AAH9YKYT0xTLPnc0Z597YjVLXNCo4nvgl-8'
@@ -78,25 +80,36 @@ class Database:
             # Obtener las credenciales del archivo .env
             mongodb_uri = os.getenv('MONGODB_URI')
             if not mongodb_uri:
-                raise Exception("No se encontró MONGODB_URI en el archivo .env")
+                print("❌ Error: No se encontró MONGODB_URI en las variables de entorno")
+                return False
             
-            # Intentar conectar a MongoDB
-            self.client = MongoClient(mongodb_uri)
+            print("🔄 Intentando conectar a MongoDB...")
+            
+            # Intentar conectar a MongoDB con timeout
+            self.client = MongoClient(mongodb_uri, serverSelectionTimeoutMS=5000)
+            
             # Verificar la conexión
             self.client.admin.command('ping')
-            self.db = self.client.rifa_db
+            
+            # Seleccionar la base de datos
+            self.db = self.client.get_database()
             
             # Crear colecciones si no existen
             collections = ['registro', 'rifas_pagadas', 'rifas_gratis', 
                          'historial_rifas', 'historial_gratis', 'links']
+            
+            db_collections = self.db.list_collection_names()
             for collection in collections:
-                if collection not in self.db.list_collection_names():
+                if collection not in db_collections:
                     self.db.create_collection(collection)
             
             print("✅ Conexión exitosa a MongoDB")
             return True
+            
         except Exception as e:
-            print(f"❌ Error al conectar con MongoDB: {e}")
+            print(f"❌ Error al conectar con MongoDB: {str(e)}")
+            if hasattr(e, 'details'):
+                print(f"Detalles del error: {e.details}")
             self.client = None
             self.db = None
             return False
@@ -109,7 +122,8 @@ class Database:
             # Verificar la conexión con un ping
             self.client.admin.command('ping')
             return True
-        except:
+        except Exception as e:
+            print(f"🔄 Reconectando a MongoDB debido a: {str(e)}")
             return self.connect()
     
     def registro_find_one(self, query):
