@@ -1,0 +1,16 @@
+[
+    {
+        "nombre": "asdd asdasda",
+        "celular": "5456464656",
+        "chat_id": 5498545183,
+        "cantidad": 5,
+        "numeros_unicos": [
+            "c11dfa56-4352-46fe-a88a-bc8914dc552f",
+            "4b2fc2d8-8815-4db4-9b6a-8e48754c08dd",
+            "41564a65-cd89-4657-aa64-10e9a3f750e4",
+            "6803fb9a-3310-4cb2-9171-9f0a461e4f2d",
+            "712e94ac-1b52-47da-bf21-c0adbd8c8354"
+        ],
+        "fecha_compra": "2025-03-26 15:11:11"
+    }
+]
