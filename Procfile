@@ -1,1 +1,1 @@
-worker: python rifa.py 
+web: gunicorn main:app 
