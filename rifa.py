@@ -11,12 +11,12 @@ import threading
 import time
 
 # Token del bot
-TOKEN = os.environ.get('BOT_TOKEN', '6824080362:AAH9YKYT0xTLPnc0Z597YjVLXNCo4nvgl-8')
-ADMIN_CHAT_ID = int(os.environ.get('ADMIN_CHAT_ID', '5498545183'))
+TOKEN = '6824080362:AAH9YKYT0xTLPnc0Z597YjVLXNCo4nvgl-8'
+ADMIN_CHAT_ID = 5498545183
 
 # Constantes
-CHAT_SOPORTE = int(os.environ.get('CHAT_SOPORTE', '-1002670436670'))  # Chat donde están los operadores
-CHAT_HISTORIAL = int(os.environ.get('CHAT_HISTORIAL', '-1002659327715'))  # Chat donde se guarda el historial
+CHAT_SOPORTE = -1002670436670  # Chat donde están los operadores
+CHAT_HISTORIAL = -1002659327715  # Chat donde se guarda el historial
 TIEMPO_INACTIVIDAD = 240  # 1 minuto en segundos
 
 # Inicializar el bot
@@ -1284,8 +1284,10 @@ inicializar_json()
 if __name__ == '__main__':
     try:
         print('🤖 Bot iniciado exitosamente...')
-        # Usar skip_pending=True para ignorar mensajes antiguos al iniciar
-        bot.infinity_polling(skip_pending=True)
+        # Configurar webhook
+        bot.remove_webhook()
+        bot.set_webhook(url='https://tu-dominio-vercel.vercel.app/api')
+        print('✅ Webhook configurado exitosamente')
     except Exception as e:
         print(f'❌ Error al iniciar el bot: {e}')
     finally:
