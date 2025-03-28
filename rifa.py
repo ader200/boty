@@ -1286,7 +1286,7 @@ if __name__ == '__main__':
         print('🤖 Bot iniciado exitosamente...')
         # Configurar webhook
         bot.remove_webhook()
-        bot.set_webhook(url='https://tu-dominio-vercel.vercel.app/api')
+        bot.set_webhook(url='https://boty-loyk53xm4-ader200s-projects.vercel.app')
         print('✅ Webhook configurado exitosamente')
     except Exception as e:
         print(f'❌ Error al iniciar el bot: {e}')
